@@ -1,0 +1,195 @@
+QuickStamp & Sign (EasyPS) - iOS Application
+=============================================
+
+Repository: https://github.com/zshshr/EasyPS
+iOS Version: 17.0+
+Swift Version: 5.9+
+UI Framework: SwiftUI
+Architecture: MVVM
+
+📁 Project Structure
+===================
+
+EasyPS/
+│
+├── 📄 Package.swift                    # Swift Package Manager config
+├── 📄 .gitignore                       # Git ignore rules
+├── 📄 LICENSE                          # MIT License
+│
+├── 📚 Documentation
+│   ├── 📄 README.md                    # Main project documentation
+│   ├── 📄 TECHNICAL.md                 # Technical architecture details
+│   ├── 📄 CONTRIBUTING.md              # Contribution guidelines
+│   ├── 📄 QUICKSTART.md                # Quick start guide
+│   └── 📄 PROJECT_SUMMARY.md           # Complete project overview
+│
+├── 📱 QuickStampSign/                  # Main Application
+│   │
+│   ├── 🚀 App/
+│   │   └── QuickStampSignApp.swift    # App entry point, tab navigation
+│   │
+│   ├── ⚙️ Core/                        # Core Components
+│   │   │
+│   │   ├── 🖼️ ImageProcessor/
+│   │   │   └── ImageProcessor.swift    # AI-powered image processing
+│   │   │                               # - Edge detection (Vision)
+│   │   │                               # - Background removal
+│   │   │                               # - Color enhancement
+│   │   │                               # - Noise reduction
+│   │   │                               # - Bulk processing
+│   │   │
+│   │   ├── 💾 Storage/
+│   │   │   ├── Models.swift            # SwiftData models
+│   │   │   │                           # - StampModel
+│   │   │   │                           # - SignatureModel
+│   │   │   │                           # - PDFDocumentModel
+│   │   │   └── StorageManager.swift    # Storage operations (CRUD)
+│   │   │
+│   │   └── 🔧 Utils/
+│   │       └── Extensions.swift        # Utility extensions
+│   │                                   # - UIImage extensions
+│   │                                   # - Data extensions
+│   │                                   # - Date formatting
+│   │
+│   ├── ✨ Features/                    # Feature Modules
+│   │   │
+│   │   ├── 🏷️ StampProcessing/
+│   │   │   ├── StampProcessingViewModel.swift  # Business logic
+│   │   │   └── StampProcessingView.swift       # UI implementation
+│   │   │                                       # - Grid library view
+│   │   │                                       # - Image picker
+│   │   │                                       # - Processing overlay
+│   │   │                                       # - Stamp management
+│   │   │
+│   │   ├── ✍️ Signature/
+│   │   │   └── SignatureView.swift     # Complete signature feature
+│   │   │                               # - PencilKit canvas
+│   │   │                               # - Apple Pencil support
+│   │   │                               # - Signature library
+│   │   │                               # - Save/delete operations
+│   │   │
+│   │   └── 📄 PDFEditor/
+│   │       ├── PDFProcessor.swift      # PDF processing engine
+│   │       │                           # - Image to PDF
+│   │       │                           # - PDF merging
+│   │       │                           # - Overlay operations
+│   │       │                           # - Thumbnail generation
+│   │       └── PDFEditorView.swift     # PDF UI
+│   │                                   # - Document list
+│   │                                   # - PDF viewer
+│   │                                   # - Overlay controls
+│   │                                   # - Stamp/signature pickers
+│   │
+│   └── 📦 Resources/
+│       └── Info.plist                  # App configuration
+│                                       # - Privacy permissions
+│                                       # - Display name
+│                                       # - Bundle info
+│
+├── 🧪 QuickStampSignTests/             # Unit Tests
+│   ├── ImageProcessorTests.swift      # Image processing tests
+│   └── PDFProcessorTests.swift        # PDF processing tests
+│
+└── 🎭 QuickStampSignUITests/           # UI Tests (ready for expansion)
+
+
+🎯 Key Features
+===============
+
+1. 🏷️ Intelligent Seal Processing
+   ✅ AI-powered edge detection
+   ✅ Background removal
+   ✅ Transparent PNG generation
+   ✅ Red color enhancement
+   ✅ Noise cleaning
+   ✅ Anti-aliasing
+   ✅ Bulk processing
+   ✅ Stamp library
+
+2. ✍️ Handwritten Signature
+   ✅ PencilKit canvas
+   ✅ Pressure sensitivity
+   ✅ Multiple styles
+   ✅ Drag & drop
+   ✅ Resize/rotate
+   ✅ Transparency control
+
+3. 📄 PDF Processing
+   ✅ Image to PDF
+   ✅ Multi-image merge
+   ✅ Stamp overlay
+   ✅ Signature overlay
+   ✅ PDF preview
+   ✅ Page management
+
+
+🛠️ Technology Stack
+===================
+
+Framework              Usage
+---------              -----
+SwiftUI               Modern declarative UI
+Vision                AI edge detection
+Core Image            Image processing filters
+PencilKit             Handwriting canvas
+PDFKit                PDF manipulation
+SwiftData             Data persistence (iOS 17+)
+PhotosUI              Photo picker
+Core Graphics         Low-level graphics
+UIKit                 Core UI components
+Foundation            Core utilities
+
+
+📊 Code Statistics
+==================
+
+Category              Count    Lines
+--------              -----    -----
+Swift Files              10   ~1,759
+Test Files                2     ~167
+Documentation             5   ~4,000+
+Total                    17   ~6,000+
+
+
+✨ Highlights
+=============
+
+✓ Zero third-party dependencies
+✓ 100% Swift native code
+✓ MVVM architecture
+✓ Async/await concurrency
+✓ Comprehensive error handling
+✓ Unit test coverage
+✓ Complete documentation
+✓ Production-ready code
+
+
+🚀 Getting Started
+==================
+
+1. Clone: git clone https://github.com/zshshr/EasyPS.git
+2. Open: open Package.swift
+3. Build: Cmd + R
+4. Test: Cmd + U
+
+See QUICKSTART.md for detailed instructions.
+
+
+📝 License
+==========
+
+MIT License - See LICENSE file for details
+
+
+🤝 Contributing
+===============
+
+See CONTRIBUTING.md for guidelines
+
+
+📮 Contact
+==========
+
+Repository: https://github.com/zshshr/EasyPS
+Issues: https://github.com/zshshr/EasyPS/issues
+
