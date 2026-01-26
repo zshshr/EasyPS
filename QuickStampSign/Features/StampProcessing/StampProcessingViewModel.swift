@@ -12,21 +12,18 @@ public class StampProcessingViewModel: ObservableObject {
     @Published public var errorMessage: String?
     
     private let imageProcessor: ImageProcessor
-    private let storageManager: StorageManager
     
-    public init(
-        imageProcessor: ImageProcessor = ImageProcessor(),
-        storageManager: StorageManager = .shared
-    ) {
+    public init(imageProcessor: ImageProcessor = ImageProcessor()) {
         self.imageProcessor = imageProcessor
-        self.storageManager = storageManager
     }
     
     /// Process a single stamp image
-    public func processStamp(_ image: UIImage, name: String) async {
+    public func processStamp(_ image: UIImage, name: String) async -> UIImage? {
         isProcessing = true
         processingProgress = 0.0
         errorMessage = nil
+        
+        var processedImage: UIImage?
         
         do {
             processingProgress = 0.3
@@ -39,43 +36,33 @@ public class StampProcessingViewModel: ObservableObject {
             let optimized = try await imageProcessor.optimizeStamp(noBackground)
             processingProgress = 0.9
             
-            // Save to storage
-            if let imageData = optimized.pngData {
-                let stamp = StampModel(name: name, imageData: imageData)
-                // Note: Actual saving would need ModelContext from SwiftUI view
-                // stamps.append(stamp)
-            }
-            
+            processedImage = optimized
             processingProgress = 1.0
         } catch {
             errorMessage = error.localizedDescription
         }
         
         isProcessing = false
+        return processedImage
     }
     
     /// Process multiple stamps in bulk
-    public func processBulkStamps(_ images: [UIImage], baseName: String) async {
+    public func processBulkStamps(_ images: [UIImage], baseName: String) async -> [UIImage] {
         isProcessing = true
         processingProgress = 0.0
         errorMessage = nil
         
+        var processedImages: [UIImage] = []
+        
         do {
-            let processed = try await imageProcessor.processBulkStamps(images)
-            
-            for (index, processedImage) in processed.enumerated() {
-                if let imageData = processedImage.pngData {
-                    let name = "\(baseName)_\(index + 1)"
-                    let stamp = StampModel(name: name, imageData: imageData)
-                    // stamps.append(stamp)
-                }
-                processingProgress = Double(index + 1) / Double(processed.count)
-            }
+            processedImages = try await imageProcessor.processBulkStamps(images)
+            processingProgress = 1.0
         } catch {
             errorMessage = error.localizedDescription
         }
         
         isProcessing = false
+        return processedImages
     }
     
     /// Delete a stamp

@@ -107,22 +107,30 @@ public struct StampProcessingView: View {
         
         Task {
             if selectedImages.count == 1, let image = selectedImages.first {
-                await viewModel.processStamp(image, name: stampName)
-                if let imageData = image.pngData {
+                if let processedImage = await viewModel.processStamp(image, name: stampName),
+                   let imageData = processedImage.pngData() {
                     let stamp = StampModel(name: stampName, imageData: imageData)
                     modelContext.insert(stamp)
-                    try? modelContext.save()
+                    do {
+                        try modelContext.save()
+                    } catch {
+                        print("Failed to save stamp: \(error)")
+                    }
                 }
             } else {
-                await viewModel.processBulkStamps(selectedImages, baseName: stampName)
-                for (index, image) in selectedImages.enumerated() {
-                    if let imageData = image.pngData {
+                let processedImages = await viewModel.processBulkStamps(selectedImages, baseName: stampName)
+                for (index, processedImage) in processedImages.enumerated() {
+                    if let imageData = processedImage.pngData() {
                         let name = "\(stampName)_\(index + 1)"
                         let stamp = StampModel(name: name, imageData: imageData)
                         modelContext.insert(stamp)
                     }
                 }
-                try? modelContext.save()
+                do {
+                    try modelContext.save()
+                } catch {
+                    print("Failed to save stamps: \(error)")
+                }
             }
             
             selectedImages = []
@@ -132,7 +140,12 @@ public struct StampProcessingView: View {
     
     private func deleteStamp(_ stamp: StampModel) {
         modelContext.delete(stamp)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to delete stamp: \(error)")
+        }
+    }
     }
 }
 
@@ -227,21 +240,26 @@ struct ImagePicker: UIViewControllerRepresentable {
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             picker.dismiss(animated: true)
             
-            var images: [UIImage] = []
             let group = DispatchGroup()
+            var loadedImages: [(Int, UIImage)] = []
+            let queue = DispatchQueue(label: "com.quickstampsign.imagepicker", attributes: .concurrent)
+            let resultsLock = NSLock()
             
-            for result in results {
+            for (index, result) in results.enumerated() {
                 group.enter()
                 result.itemProvider.loadObject(ofClass: UIImage.self) { object, error in
                     defer { group.leave() }
                     if let image = object as? UIImage {
-                        images.append(image)
+                        resultsLock.lock()
+                        loadedImages.append((index, image))
+                        resultsLock.unlock()
                     }
                 }
             }
             
             group.notify(queue: .main) {
-                self.parent.completion(images)
+                let sortedImages = loadedImages.sorted { $0.0 < $1.0 }.map { $0.1 }
+                self.parent.completion(sortedImages)
             }
         }
     }

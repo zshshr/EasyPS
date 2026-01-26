@@ -6,10 +6,11 @@ import CoreImage.CIFilterBuiltins
 /// Core image processing engine for stamp detection and optimization
 public class ImageProcessor {
     
-    private let context: CIContext
+    public init() {}
     
-    public init() {
-        self.context = CIContext(options: [.useSoftwareRenderer: false])
+    // Create context on demand for better concurrency
+    private var context: CIContext {
+        CIContext(options: [.useSoftwareRenderer: false])
     }
     
     // MARK: - Stamp Edge Detection
@@ -60,11 +61,8 @@ public class ImageProcessor {
             throw ImageProcessorError.invalidImage
         }
         
-        // Convert to HSV color space and isolate red tones
-        let hsvImage = convertToHSV(ciImage)
-        
         // Create mask for red areas (typical stamp color)
-        let redMask = createRedColorMask(from: hsvImage)
+        let redMask = createRedColorMask(from: ciImage)
         
         // Apply mask to create transparent background
         let outputImage = applyTransparency(to: ciImage, using: redMask)
@@ -132,12 +130,6 @@ public class ImageProcessor {
     }
     
     // MARK: - Private Helper Methods
-    
-    private func convertToHSV(_ image: CIImage) -> CIImage {
-        let filter = CIFilter.hueAdjust()
-        filter.inputImage = image
-        return filter.outputImage ?? image
-    }
     
     private func createRedColorMask(from image: CIImage) -> CIImage {
         // Create color cube filter for red isolation

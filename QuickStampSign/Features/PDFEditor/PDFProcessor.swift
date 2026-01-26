@@ -67,41 +67,44 @@ public class PDFProcessor {
         alpha: CGFloat = 1.0
     ) -> Data? {
         guard let document = PDFDocument(data: pdfData),
-              pageIndex < document.pageCount,
-              let page = document.page(at: pageIndex) else {
+              pageIndex < document.pageCount else {
             return nil
         }
         
-        let pageBounds = page.bounds(for: .mediaBox)
-        
-        // Create PDF context for the modified page
+        // Create PDF context for the modified document
         let outputData = NSMutableData()
-        UIGraphicsBeginPDFContextToData(outputData, pageBounds, nil)
+        UIGraphicsBeginPDFContextToData(outputData, .zero, nil)
         defer { UIGraphicsEndPDFContext() }
         
-        UIGraphicsBeginPDFPage()
-        
-        guard let context = UIGraphicsGetCurrentContext() else {
-            return nil
+        // Iterate through all pages
+        for currentIndex in 0..<document.pageCount {
+            guard let currentPage = document.page(at: currentIndex) else { continue }
+            
+            let pageBounds = currentPage.bounds(for: .mediaBox)
+            UIGraphicsBeginPDFPageWithInfo(pageBounds, nil)
+            
+            guard let context = UIGraphicsGetCurrentContext() else { continue }
+            
+            // Draw original page
+            context.saveGState()
+            currentPage.draw(with: .mediaBox, to: context)
+            context.restoreGState()
+            
+            // Draw overlay only on the specified page
+            if currentIndex == pageIndex {
+                context.saveGState()
+                
+                // Apply transformations
+                let overlayRect = CGRect(origin: position, size: size)
+                context.translateBy(x: overlayRect.midX, y: overlayRect.midY)
+                context.rotate(by: rotation * .pi / 180)
+                context.translateBy(x: -overlayRect.midX, y: -overlayRect.midY)
+                
+                overlayImage.draw(in: overlayRect, blendMode: .normal, alpha: alpha)
+                
+                context.restoreGState()
+            }
         }
-        
-        // Draw original page
-        context.saveGState()
-        page.draw(with: .mediaBox, to: context)
-        context.restoreGState()
-        
-        // Draw overlay
-        context.saveGState()
-        
-        // Apply transformations
-        let overlayRect = CGRect(origin: position, size: size)
-        context.translateBy(x: overlayRect.midX, y: overlayRect.midY)
-        context.rotate(by: rotation * .pi / 180)
-        context.translateBy(x: -overlayRect.midX, y: -overlayRect.midY)
-        
-        overlayImage.draw(in: overlayRect, blendMode: .normal, alpha: alpha)
-        
-        context.restoreGState()
         
         return outputData as Data
     }

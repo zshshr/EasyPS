@@ -50,8 +50,8 @@ func processBulkStamps(_ images: [UIImage]) async throws -> [UIImage]
    - Returns contour observations for further processing
 
 2. **Background Removal**
-   - Converts image to HSV color space
-   - Creates color mask for red tones (typical stamp color)
+   - Creates color cube filter for red tone isolation
+   - Uses RGB to HSV calculations within color cube for red detection
    - Applies mask to generate transparent PNG
 
 3. **Optimization**
@@ -172,31 +172,22 @@ class PDFDocumentModel {
 }
 ```
 
-### 4. Storage Manager
+### 4. Data Persistence
 
-**File**: `QuickStampSign/Core/Storage/StorageManager.swift`
+**SwiftData Integration**: The app uses SwiftData's `@Query` property wrapper and `@Environment(\.modelContext)` for direct data access in SwiftUI views, providing reactive updates and type-safe queries without requiring a separate storage manager layer.
 
-Singleton manager for SwiftData operations:
-
+Example usage in views:
 ```swift
-class StorageManager {
-    static let shared = StorageManager()
-    
-    // CRUD operations for stamps
-    func saveStamp(_ stamp: StampModel, context: ModelContext)
-    func deleteStamp(_ stamp: StampModel, context: ModelContext)
-    func fetchStamps(context: ModelContext) -> [StampModel]
-    
-    // CRUD operations for signatures
-    func saveSignature(_ signature: SignatureModel, context: ModelContext)
-    func deleteSignature(_ signature: SignatureModel, context: ModelContext)
-    func fetchSignatures(context: ModelContext) -> [SignatureModel]
-    
-    // CRUD operations for PDFs
-    func savePDFDocument(_ document: PDFDocumentModel, context: ModelContext)
-    func deletePDFDocument(_ document: PDFDocumentModel, context: ModelContext)
-    func fetchPDFDocuments(context: ModelContext) -> [PDFDocumentModel]
-}
+@Environment(\.modelContext) private var modelContext
+@Query(sort: \StampModel.createdDate, order: .reverse) private var stamps: [StampModel]
+
+// Saving
+modelContext.insert(stamp)
+try modelContext.save()
+
+// Deleting
+modelContext.delete(stamp)
+try modelContext.save()
 ```
 
 ## UI Components

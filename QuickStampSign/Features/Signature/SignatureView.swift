@@ -61,27 +61,20 @@ public struct SignatureCanvasView: View {
             scale: UIScreen.main.scale
         )
         
-        // Create transparent background version
-        let transparentImage = createTransparentBackground(from: image)
-        
-        if let imageData = transparentImage.pngData {
+        if let imageData = image.pngData() {
             let signature = SignatureModel(
-                name: signatureName.isEmpty ? "Signature \(Date().formatted())" : signatureName,
+                name: signatureName.isEmpty ? "Signature \(Date().formattedString())" : signatureName,
                 imageData: imageData
             )
             modelContext.insert(signature)
-            try? modelContext.save()
+            do {
+                try modelContext.save()
+            } catch {
+                print("Failed to save signature: \(error)")
+            }
         }
         
         dismiss()
-    }
-    
-    private func createTransparentBackground(from image: UIImage) -> UIImage {
-        UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
-        defer { UIGraphicsEndImageContext() }
-        
-        image.draw(at: .zero)
-        return UIGraphicsGetImageFromCurrentImageContext() ?? image
     }
 }
 

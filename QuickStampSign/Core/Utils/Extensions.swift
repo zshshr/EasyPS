@@ -3,11 +3,6 @@ import UIKit
 /// Utility extensions for common operations
 public extension UIImage {
     
-    /// Convert UIImage to PNG Data
-    var pngData: Data? {
-        return self.pngData()
-    }
-    
     /// Resize image to specified size
     func resized(to size: CGSize) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(size, false, scale)
@@ -58,7 +53,7 @@ public extension Data {
 
 public extension Date {
     /// Format date to readable string
-    func formatted(style: DateFormatter.Style = .medium) -> String {
+    func formattedString(style: DateFormatter.Style = .medium) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = style
         formatter.timeStyle = .short
